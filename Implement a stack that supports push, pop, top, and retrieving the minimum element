@@ -1,0 +1,279 @@
+Implement a stack that supports push, pop, top, and retrieving the minimum element 
+
+public class MinStack {
+    private Stack<Integer> stack;
+    private Stack<Integer> minStack;
+
+    public MinStack() {
+        stack = new Stack<>();
+        minStack = new Stack<>();
+    }
+
+    // Push element onto stack
+    public void push(int x) {
+        stack.push(x);
+
+        // If minStack is empty or new element is <= current min, push it
+        if (minStack.isEmpty() || x <= minStack.peek()) {
+            minStack.push(x);
+        }
+    }
+
+    // Pop element from stack
+    public void pop() {
+        if (stack.isEmpty()) {
+            System.out.println("Stack is empty.");
+            return;
+        }
+        int removed = stack.pop();
+
+        // If removed element is the current min, pop from minStack too
+        if (removed == minStack.peek()) {
+            minStack.pop();
+        }
+    }
+
+    // Get top element
+    public int top() {
+        if (stack.isEmpty()) {
+            System.out.println("Stack is empty.");
+            return -1;
+        }
+        return stack.peek();
+    }
+
+    // Retrieve minimum element in constant time
+    public int getMin() {
+        if (minStack.isEmpty()) {
+            System.out.println("Stack is empty.");
+            return -1;
+        }
+        return minStack.peek();
+    }
+
+    public static void main(String[] args) {
+        MinStack minStack = new MinStack();
+        minStack.push(5);
+        minStack.push(3);
+        minStack.push(7);
+        minStack.push(2);
+
+        System.out.println("Current Min: " + minStack.getMin()); // 2
+
+        minStack.pop(); // removes 2
+        System.out.println("Current Min: " + minStack.getMin()); // 3
+
+        System.out.println("Top Element: " + minStack.top());    // 7
+    }
+}
+How It Works
+stack → Stores all pushed elements.
+
+minStack → Stores the minimum element so far at each push.
+
+When you push():
+
+Push to main stack.
+
+Push to minStack if it’s empty or value ≤ current min.
+
+When you pop():
+
+Remove from main stack.
+
+If removed element equals minStack.peek(), pop from minStack too.
+
+getMin() → Always O(1) because we just peek minStack.
+
+If you want, I can also give you a space-optimized Min Stack version that doesn’t use an extra stack but still gets O(1) min retrieval — interviewers often find that impressive.
+Do you want me to prepare that?
+
+
+
+
+
+
+
+
+
+Ask ChatGPT
+You said:
+convert this code in java and also fix error the question is Given a positive integer n, there exists a 0-indexed array called powers, composed of the minimum number of powers of 2 that sum to n. The array is sorted in non-decreasing order, and there is only one way to form the array.
+
+You are also given a 0-indexed 2D integer array queries, where queries[i] = [lefti, righti]. Each queries[i] represents a query where you have to find the product of all powers[j] with lefti <= j <= righti.
+
+Return an array answers, equal in length to queries, where answers[i] is the answer to the ith query. Since the answer to the ith query may be too large, each answers[i] should be returned modulo 109 + 7.
+
+ 
+
+
+ChatGPT said:
+Alright, Nidhi — let’s first understand the problem clearly, then I’ll give you the fixed and converted Java solution.
+
+Understanding the Problem
+You’re given an integer n.
+
+Create an array powers that contains the minimum number of powers of 2 summing to n.
+
+Example: n = 10 → powers = [2, 8] (because 2 + 8 = 10, minimal count, sorted ascending).
+
+You’re given queries[i] = [left, right].
+
+For each query, find the product of powers from left to right in powers.
+
+Since results can be large → return mod 10^9 + 7.
+
+Steps to Solve
+Find powers array:
+
+Decompose n into powers of 2 (using bit manipulation or greedy subtraction).
+
+Store in ascending order.
+
+Answer queries:
+
+For each [l, r], multiply elements from index l to r.
+
+Apply modulo after each multiplication.
+
+Java Code
+java
+Copy
+Edit
+import java.util.*;
+
+public class PowersOfTwoQueries {
+    private static final long MOD = 1_000_000_007;
+
+    public static List<Long> productQueries(int n, int[][] queries) {
+        // Step 1: Build powers array (ascending order)
+        List<Long> powers = new ArrayList<>();
+        for (int i = 0; i < 31; i++) { // int up to 2^30
+            if ((n & (1 << i)) != 0) {
+                powers.add((long) (1 << i));
+            }
+        }
+
+        // Step 2: Answer queries
+        List<Long> result = new ArrayList<>();
+        for (int[] q : queries) {
+            int left = q[0];
+            int right = q[1];
+            long product = 1;
+
+            for (int i = left; i <= right; i++) {
+                product = (product * powers.get(i)) % MOD;
+            }
+            result.add(product);
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int n = 10;
+        int[][] queries = { {0, 1}, {1, 1} };
+
+        List<Long> ans = productQueries(n, queries);
+        System.out.println(ans); // Output: [16, 8]
+    }
+}
+Example Walkthrough
+Input:
+lua
+Copy
+Edit
+n = 10 → binary 1010 → powers = [2, 8]
+queries = [[0,1], [1,1]]
+Query 0: 2 × 8 = 16 → 16 % (1e9+7) = 16
+
+Query 1: 8 = 8
+
+Output: [16, 8]
+
+If you want, I can optimize this to handle up to 10^5 queries using prefix products so we don’t multiply repeatedly in each query — that will make it O(1) per query instead of O(k).
+
+Do you want me to make that optimized version?
+
+
+
+
+
+
+
+
+You said:
+they give us method like array  public int[] productQueries(int n, int[][] queries) { }not list format
+
+
+ChatGPT said:
+Got it ✅
+You want the same solution but returning int[] instead of List<Long> — I’ll convert it and keep everything correct for Java.
+
+Fixed Java Code
+java
+Copy
+Edit
+public class PowersOfTwoQueries {
+    private static final int MOD = 1_000_000_007;
+
+    public int[] productQueries(int n, int[][] queries) {
+        // Step 1: Build powers array (ascending order)
+        java.util.List<Integer> powers = new java.util.ArrayList<>();
+        for (int i = 0; i < 31; i++) { // int max 2^30
+            if ((n & (1 << i)) != 0) {
+                powers.add(1 << i);
+            }
+        }
+
+        // Step 2: Answer queries in array form
+        int[] result = new int[queries.length];
+        for (int q = 0; q < queries.length; q++) {
+            int left = queries[q][0];
+            int right = queries[q][1];
+            long product = 1;
+
+            for (int i = left; i <= right; i++) {
+                product = (product * powers.get(i)) % MOD;
+            }
+            result[q] = (int) product;
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        PowersOfTwoQueries obj = new PowersOfTwoQueries();
+
+        int n = 10;
+        int[][] queries = { {0, 1}, {1, 1} };
+
+        int[] ans = obj.productQueries(n, queries);
+
+        for (int val : ans) {
+            System.out.print(val + " ");
+        }
+        // Output: 16 8
+    }
+}
+Changes made from earlier version
+Now returns int[] instead of List<Long>.
+
+Used powers as List<Integer> for easy index access.
+
+Converted final product result to int since required return type is int[].
+
+Added modulo in multiplication step to avoid overflow.
+
+If you want, I can now optimize this by using prefix product array with modulo so that each query runs in O(1) instead of looping over each element in the range.
+That will make it fast enough for n up to 10^5 and queries up to 10^5.
+
+Do you want me to give you that optimized version next?
+
+
+
+
+
+
+
+
+
