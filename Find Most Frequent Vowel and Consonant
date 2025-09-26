@@ -1,0 +1,30 @@
+Input: s = "successes"
+
+Output: 6
+
+Explanation:
+
+The vowels are: 'u' (frequency 1), 'e' (frequency 2). The maximum frequency is 2.
+The consonants are: 's' (frequency 4), 'c' (frequency 2). The maximum frequency is 4.
+The output is 2 + 4 = 6.
+
+
+class Solution {
+    public int maxFreqSum(String s) {
+        int [] freq = new int[26];
+        int maxVowel = 0;
+        int maxCons = 0;
+
+        for(char ch : s.toCharArray()){
+            int i = ch -'a';
+            freq[i]++;
+            if( ch == 'a' || ch =='e' || ch =='i'|| ch =='o'|| ch =='u'){
+                maxVowel = Math.max(maxVowel, freq[i]);
+            }else
+            {
+                maxCons = Math.max(maxCons,freq[i]);
+            }
+        }
+        return maxVowel + maxCons;
+    }
+}
