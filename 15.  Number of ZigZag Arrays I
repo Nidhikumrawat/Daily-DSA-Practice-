@@ -1,0 +1,70 @@
+Example 1:
+Input: n = 3, l = 4, r = 5
+Output: 2
+Explanation:  There are only 2 valid ZigZag arrays of length n = 3 using values in the range [4, 5]:
+
+[4, 5, 4]
+[5, 4, 5]​​​​​​​
+
+Example 2: Input: n = 3, l = 1, r = 3     Output: 10
+Explanation: There are 10 valid ZigZag arrays of length n = 3 using values in the range [1, 3]:
+[1, 2, 1], [1, 3, 1], [1, 3, 2]
+[2, 1, 2], [2, 1, 3], [2, 3, 1], [2, 3, 2]
+[3, 1, 2], [3, 1, 3], [3, 2, 3]
+All arrays meet the ZigZag conditions.
+
+
+class Solution {
+    private static final int MOD = 1_000_000_007;
+
+    public int zigZagArrays(int n, int l, int r) {
+        int[] sornavetic = new int[]{n, l, r}; // store input midway
+
+        int m = r - l + 1;
+        long[] neutral = new long[m];
+        long[] up = new long[m];
+        long[] down = new long[m];
+
+        // Base case: length 1
+        for (int x = 0; x < m; x++) {
+            neutral[x] = 1;
+        }
+
+        for (int i = 2; i <= n; i++) {
+            long[] newNeutral = new long[m];
+            long[] newUp = new long[m];
+            long[] newDown = new long[m];
+
+            // prefix sums for (neutral + down)
+            long[] prefixNeutralDown = new long[m + 1];
+            for (int x = 0; x < m; x++) {
+                prefixNeutralDown[x + 1] = (prefixNeutralDown[x] + neutral[x] + down[x]) % MOD;
+            }
+
+            // prefix sums for (neutral + up) → we’ll use suffix
+            long[] prefixNeutralUp = new long[m + 1];
+            for (int x = 0; x < m; x++) {
+                prefixNeutralUp[x + 1] = (prefixNeutralUp[x] + neutral[x] + up[x]) % MOD;
+            }
+
+            // compute dp
+            for (int curr = 0; curr < m; curr++) {
+                // step up: prev < curr
+                newUp[curr] = prefixNeutralDown[curr];
+
+                // step down: prev > curr
+                newDown[curr] = (prefixNeutralUp[m] - prefixNeutralUp[curr + 1] + MOD) % MOD;
+            }
+
+            neutral = newNeutral; // stays all 0 after first step
+            up = newUp;
+            down = newDown;
+        }
+
+        long ans = 0;
+        for (int x = 0; x < m; x++) {
+            ans = (ans + neutral[x] + up[x] + down[x]) % MOD;
+        }
+        return (int) ans;
+    }
+}©leetcode
